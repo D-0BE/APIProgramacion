@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APIDigimon</title>
+    <link rel="stylesheet" href="ApiDigimon.css">
+    <script src="ApiDigimon.js" defer></script>
+</head>
+<body onload="fetchData()">
+
+    <div id = "titulo">
+        <h1>Hecho por David Dobeson | Víctor Martínez | Rui Qian</h>
+        <p>FUNCIONALIDAD: en vez de buscar por ID: hace una búsqueda aproximada por nombre.</p>
+    </div>
+    
+    
+    <div class="buscador-container">
+        <input type="text" id="nombreDigimon" placeholder="Introduce el nombre del digimon">
+        <button onclick="fetchData()">Buscar</button><br>
+    </div>
+
+    <div id="cajaDigimon">
+        <img src="" alt="Imagen del digimon" id="imgDigimon" style="display:none">
+        <div id="infoDigimon"></div>
+    </div>
+    
+    
+</body>
+</html>
