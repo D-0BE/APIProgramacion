@@ -1,9 +1,8 @@
-const caja = (name, img, nivel) =>
+const caja = (id, name, img) =>
     `<div>
-            <h3 id="nombreDigimon>${name}</h3>
+            <h3>${name}</h3>
             <img src='${img}' alt='${name}'>
-            
-            
+            <button onclick='fetchDetail(${id})'>Ver detalle</button>
     </div>`;
 
 const printHtml = (html) => {
@@ -27,7 +26,7 @@ async function fetchData() {
             throw new Error("Could not fetch resource");
         }
 
-    
+
         const data = await response.json();
 
         if (!data?.content || data?.content?.length == 0) {
@@ -45,38 +44,10 @@ async function fetchData() {
       */
         var output = '';
         data.content.forEach(x => {
-            output += caja(x.name, x.image, x.href);
+            output += caja(x.id, x.name, x.image);
         });
 
         printHtml(output);
-
-        return; //----------------------------------
-
-        // // imagenes
-        // if (data && data.images && data.images.length > 0) {
-
-        //     //take first or loop all
-        //     const imgDigimon = data.images[0];
-        //     const imgElement = document.getElementById("imgDigimon");
-
-
-        //     imgElement.src = imgDigimon.href;
-        //     imgElement.style.display = "block";
-
-        //     var nombre = data.name.toUpperCase();
-        //     const nivel = data.levels[0];
-        //     var evoluciones = data.nextEvolutions[0];
-        //     var fechaSalida = data.releaseDate;
-        //     const habilidad = data.skills[0];
-
-        //     divInfo.innerHTML = `<p><strong>Nombre:</strong> ${nombre}</p>
-        //                         <p><strong>Siguiente evolución - Digimon: ${evoluciones.digimon}</strong></p>
-        //                         <p><strong>Siguiente evolución - condición: ${evoluciones.condition}</strong></p>
-        //                         <p><strong>Fecha de salida: ${fechaSalida}</strong></p>
-        //                         <p><strong>Nivel: ${nivel.level}</strong></p>
-        //                         <p><strong>Habilidad: ${habilidad.skill} -  ${habilidad.description}</strong></p>`;
-        // }
-
 
     }
     catch (error) {
@@ -84,5 +55,65 @@ async function fetchData() {
     }
 }
 
+
+async function fetchDetail(id) {
+
+    try {
+
+        const response = await fetch(`https://digi-api.com/api/v1/digimon/${id}`);
+
+        if (!response.ok) {
+            throw new Error("Could not fetch resource");
+        }
+
+        const data = await response.json();
+
+        // imagenes
+        if (data) {
+
+
+            //take first or loop all
+            const imgDigimon = data.images && data.images.length > 0 ?
+                data.images[0] :
+                null;
+
+            var nombre = data.name?.toUpperCase();
+
+
+            //array de atributos
+            const attributes = [];
+
+            if (data.levels && data.levels.length > 0)
+                attributes.push({ key: "Level", value: data.levels[0].level })
+
+            if (data.nextEvolutions && data.nextEvolutions.length > 0)
+                attributes.push({ key: "Siguiente evolución", value: data.nextEvolutions[0].digimon })
+
+            if (data.releaseDate)
+                attributes.push({ key: "Fecha de salida", value: data.releaseDate })
+
+            if (data.skills && data.skills.length > 0) {
+                attributes.push({ key: "Habilidad", value: `${data.skills[0].skill} - ${data.skills[0].description}`});
+            }
+
+            //TODO: El boton volver vuelve a llamar al API. Optimizar
+            var html = imgDigimon ? `<img src="${imgDigimon.href}" alt="${nombre}">` : '';
+            html += `<p><strong>Nombre:</strong> ${nombre}</p>`;
+
+            attributes.forEach(x => {
+                html += `<p><strong>${x.key}:</strong> ${x.value}</p>`;
+            });
+
+            html += '<button onclick="fetchData()">Volver</button>';
+
+            printHtml(html);
+        }
+
+
+    }
+    catch (error) {
+        console.error(error);
+    }
+}
 
 
